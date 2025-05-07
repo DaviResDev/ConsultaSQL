@@ -1,0 +1,277 @@
+Create Database medico;
+use medico;
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Banco de dados: `hospital`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `clinica`
+--
+
+DROP TABLE IF EXISTS `clinica`;
+CREATE TABLE IF NOT EXISTS `clinica` (
+  `clinica_id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) DEFAULT NULL,
+  `endereco` varchar(255) DEFAULT NULL,
+  `especialidade` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`clinica_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Extraindo dados da tabela `clinica`
+--
+
+INSERT INTO `clinica` (`nome`, `endereco`, `especialidade`) VALUES
+('Clinica Vida Saudável', 'Rua A, 123', 'Cardiologia'),
+('Clinica Bem Estar', 'Rua B, 456', 'Pediatria'),
+('Clinica Saúde Total', 'Rua C, 789', 'Dermatologia');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `consulta_medico_paciente_exame`
+--
+
+DROP TABLE IF EXISTS `consulta_medico_paciente_exame`;
+CREATE TABLE IF NOT EXISTS `consulta_medico_paciente_exame` (
+  `fk_Medico_med_id` int DEFAULT NULL,
+  `fk_Medico_espec_id` int DEFAULT NULL,
+  `fk_Medico_clinica_id` int DEFAULT NULL,
+  `fk_Paciente_paciente_id` int DEFAULT NULL,
+  `fk_Exame_Prescricao_exame_id` int DEFAULT NULL,
+  `fk_Exame_Prescricao_tipo_id` int DEFAULT NULL,
+  KEY `FK_Consulta_Medico_Paciente_Exame_1` (`fk_Medico_med_id`, `fk_Medico_espec_id`, `fk_Medico_clinica_id`),
+  KEY `FK_Consulta_Medico_Paciente_Exame_2` (`fk_Paciente_paciente_id`),
+  KEY `FK_Consulta_Medico_Paciente_Exame_3` (`fk_Exame_Prescricao_exame_id`, `fk_Exame_Prescricao_tipo_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Extraindo dados da tabela `consulta_medico_paciente_exame`
+--
+
+INSERT INTO `consulta_medico_paciente_exame` (`fk_Medico_med_id`, `fk_Medico_espec_id`, `fk_Medico_clinica_id`, `fk_Paciente_paciente_id`, `fk_Exame_Prescricao_exame_id`, `fk_Exame_Prescricao_tipo_id`) VALUES
+(1, 1, 1, 1, 1, 1),
+(2, 2, 2, 2, 2, 2),
+(3, 3, 3, 3, 3, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `doenca`
+--
+
+DROP TABLE IF EXISTS `doenca`;
+CREATE TABLE IF NOT EXISTS `doenca` (
+  `doenca_id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) DEFAULT NULL,
+  `sintomas` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`doenca_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Extraindo dados da tabela `doenca`
+--
+
+INSERT INTO `doenca` (`nome`, `sintomas`) VALUES
+('Hipertensão', 'Dor de cabeça, tontura, fraqueza'),
+('Asma', 'Falta de ar, chiado no peito'),
+('Dermatite', 'Coceira, vermelhidão na pele');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `especialidade`
+--
+
+DROP TABLE IF EXISTS `especialidade`;
+CREATE TABLE IF NOT EXISTS `especialidade` (
+  `espec_id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) DEFAULT NULL,
+  `num_med` int DEFAULT NULL,
+  PRIMARY KEY (`espec_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Extraindo dados da tabela `especialidade`
+--
+
+INSERT INTO `especialidade` (`nome`, `num_med`) VALUES
+('Cardiologia', 10),
+('Pediatria', 8),
+('Dermatologia', 5);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `exame_prescricao`
+--
+
+DROP TABLE IF EXISTS `exame_prescricao`;
+CREATE TABLE IF NOT EXISTS `exame_prescricao` (
+  `exame_id` int NOT NULL AUTO_INCREMENT,
+  `data` date DEFAULT NULL,
+  `tipo_id` int NOT NULL,
+  `presc_id` int NOT NULL,
+  `nome` varchar(255) DEFAULT NULL,
+  `remedios` varchar(255) DEFAULT NULL,
+  `frequencia` varchar(255) DEFAULT NULL,
+  `doenca_id` int NOT NULL,
+  PRIMARY KEY (`exame_id`, `tipo_id`, `presc_id`, `doenca_id`),
+  KEY `doenca_id` (`doenca_id`),
+  KEY `FK_Exame_Prescricao_2` (`tipo_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Extraindo dados da tabela `exame_prescricao`
+--
+
+INSERT INTO `exame_prescricao` (`data`, `tipo_id`, `presc_id`, `nome`, `remedios`, `frequencia`, `doenca_id`) VALUES
+('2024-08-10', 1, 1, 'Prescrição 1', 'Atenolol', '1 vez ao dia', 1),
+('2024-08-15', 2, 2, 'Prescrição 2', 'Salbutamol', '2 vezes ao dia', 2),
+('2024-08-20', 3, 3, 'Prescrição 3', 'Hidrocortisona', 'Aplicar na pele', 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `medico`
+--
+
+DROP TABLE IF EXISTS `medico`;
+CREATE TABLE IF NOT EXISTS `medico` (
+  `med_id` int NOT NULL AUTO_INCREMENT,
+  `nome_med` varchar(255) DEFAULT NULL,
+  `dta_contratacao` date DEFAULT NULL,
+  `espec_id` int NOT NULL,
+  `clinica_id` int NOT NULL,
+  PRIMARY KEY (`med_id`, `espec_id`, `clinica_id`),
+  KEY `espec_id` (`espec_id`),
+  KEY `FK_Medico_2` (`clinica_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Extraindo dados da tabela `medico`
+--
+
+INSERT INTO `medico` (`nome_med`, `dta_contratacao`, `espec_id`, `clinica_id`) VALUES
+('Dr. Pedro Almeida', '2023-01-15', 1, 1),
+('Dra. Ana Costa', '2022-03-10', 2, 2),
+('Dr. Paulo Nogueira', '2024-07-05', 3, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `paciente`
+--
+
+DROP TABLE IF EXISTS `paciente`;
+CREATE TABLE IF NOT EXISTS `paciente` (
+  `paciente_id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) DEFAULT NULL,
+  `cpf` varchar(11) DEFAULT NULL,
+  `num_carteira` varchar(255) DEFAULT NULL,
+  `sexo` varchar(1) DEFAULT NULL,
+  `fk_Clinica_clinica_id` int DEFAULT NULL,
+  PRIMARY KEY (`paciente_id`),
+  KEY `FK_Paciente_2` (`fk_Clinica_clinica_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Extraindo dados da tabela `paciente`
+--
+
+INSERT INTO `paciente` (`nome`, `cpf`, `num_carteira`, `sexo`, `fk_Clinica_clinica_id`) VALUES
+('Carlos Silva', '12345678910', '987654321', 'M', 1),
+('Maria Oliveira', '23456789023', '876543210', 'F', 2),
+('João Santos', '345.678.901', '765432109', 'M', 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `receita`
+--
+
+DROP TABLE IF EXISTS `receita`;
+CREATE TABLE IF NOT EXISTS `receita` (
+  `fk_Exame_Prescricao_exame_id` int DEFAULT NULL,
+  `fk_Exame_Prescricao_tipo_id` int DEFAULT NULL,
+  `fk_Exame_Prescricao_presc_id` int DEFAULT NULL,
+  `fk_Exame_Prescricao_doenca_id` int DEFAULT NULL,
+  `fk_Doenca_doenca_id` int DEFAULT NULL,
+  KEY `FK_receita_1` (`fk_Exame_Prescricao_exame_id`, `fk_Exame_Prescricao_tipo_id`, `fk_Exame_Prescricao_presc_id`, `fk_Exame_Prescricao_doenca_id`),
+  KEY `FK_receita_2` (`fk_Doenca_doenca_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Extraindo dados da tabela `receita`
+--
+
+INSERT INTO `receita` (`fk_Exame_Prescricao_exame_id`, `fk_Exame_Prescricao_tipo_id`, `fk_Exame_Prescricao_presc_id`, `fk_Exame_Prescricao_doenca_id`, `fk_Doenca_doenca_id`) VALUES
+(1, 1, 1, 1, 1),
+(2, 2, 2, 2, 2),
+(3, 3, 3, 3, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tem`
+--
+
+DROP TABLE IF EXISTS `tem`;
+CREATE TABLE IF NOT EXISTS `tem` (
+  `fk_Especialidade_espec_id` int DEFAULT NULL,
+  `fk_Medico_med_id` int DEFAULT NULL,
+  `fk_Medico_espec_id` int DEFAULT NULL,
+  `fk_Medico_clinica_id` int DEFAULT NULL,
+  KEY `FK_tem_1` (`fk_Especialidade_espec_id`),
+  KEY `FK_tem_2` (`fk_Medico_med_id`, `fk_Medico_espec_id`, `fk_Medico_clinica_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Extraindo dados da tabela `tem`
+--
+
+INSERT INTO `tem` (`fk_Especialidade_espec_id`, `fk_Medico_med_id`, `fk_Medico_espec_id`, `fk_Medico_clinica_id`) VALUES
+(1, 1, 1, 1),
+(2, 2, 2, 2),
+(3, 3, 3, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tipo_exame`
+--
+
+DROP TABLE IF EXISTS `tipo_exame`;
+CREATE TABLE IF NOT EXISTS `tipo_exame` (
+  `tipo_id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) DEFAULT NULL,
+  `equipamento` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`tipo_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Extraindo dados da tabela `tipo_exame`
+--
+
+INSERT INTO `tipo_exame` (`nome`, `equipamento`) VALUES
+('Ecocardiograma', 'Máquina de Ecocardiograma'),
+('Ultrassom', 'Máquina de Ultrassom'),
+('Raio-X', 'Aparelho de Raio-X');
+
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
